@@ -31,7 +31,7 @@ var (
 	extract = flag.String("extract", "", "Extract the named executable from the .tar.gz and install into bindir.")
 	bindir  = flag.String("bindir", defaultBinDir(), "Directory to install files downloaded with -extract.")
 	// Globals
-	matchProject = regexp.MustCompile(`^(\w+)/(\w+)$`)
+	matchProject = regexp.MustCompile(`^([\w-]+)/([\w-]+)$`)
 )
 
 // A github release
@@ -257,7 +257,7 @@ func main() {
 			log.Fatalf("Need to set -bindir")
 		}
 		log.Printf("Unpacking %s from %s and installing into %s", *extract, fileName, *bindir)
-		run("tar", "xf", fileName, *extract)
+		run("tar", "--no-anchored", `--transform=s/.*\///`, "-xf", fileName, *extract)
 		run("chmod", "a+x", *extract)
 		run("mv", "-f", *extract, *bindir+"/")
 	}
